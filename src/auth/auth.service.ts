@@ -4,6 +4,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { Role } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service';
 import { LoginDto } from './dto/login.dto';
@@ -25,9 +26,9 @@ export class AuthService {
     }
     const password = await bcrypt.hash(dto.password, 10);
     const user = await this.prisma.user.create({
-      data: { email: dto.email, password },
+      data: { email: dto.email, password, role: dto.role ?? Role.CASHIER },
     });
-    return this.buildToken(user.id, user.email);
+    return this.buildToken(user.id, user.email, user.role);
   }
 
   async login(dto: LoginDto) {
@@ -41,12 +42,12 @@ export class AuthService {
     if (!ok) {
       throw new UnauthorizedException('Invalid credentials');
     }
-    return this.buildToken(user.id, user.email);
+    return this.buildToken(user.id, user.email, user.role);
   }
 
-  private buildToken(userId: string, email: string) {
+  private buildToken(userId: string, email: string, role: Role) {
     return {
-      access_token: this.jwt.sign({ sub: userId, email }),
+      access_token: this.jwt.sign({ sub: userId, email, role }),
     };
   }
 }

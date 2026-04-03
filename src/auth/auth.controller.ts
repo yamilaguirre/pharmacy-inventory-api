@@ -4,8 +4,9 @@ import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { AuthUser } from './strategies/jwt.strategy';
 
-type RequestWithUser = Request & { user: { id: string; email: string } };
+type RequestWithUser = Request & { user: AuthUser };
 
 @Controller('auth')
 export class AuthController {

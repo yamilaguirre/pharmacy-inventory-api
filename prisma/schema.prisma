@@ -24,3 +24,30 @@ enum Role {
   CASHIER
   INVENTORY_MANAGER
 }
+
+model Category {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  products  Product[]
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  @@map("categories")
+}
+
+model Product {
+  id                   String    @id @default(uuid())
+  name                 String
+  description          String?
+  sku                  String    @unique
+  barcode              String?
+  price                Decimal   @db.Decimal(10, 2)
+  requiresPrescription Boolean   @default(false) @map("requires_prescription")
+  active               Boolean   @default(true)
+  category             Category  @relation(fields: [categoryId], references: [id])
+  categoryId           String    @map("category_id")
+  createdAt            DateTime  @default(now()) @map("created_at")
+  updatedAt            DateTime  @updatedAt @map("updated_at")
+
+  @@map("products")
+}

@@ -8,12 +8,13 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
+  id        String          @id @default(uuid())
+  email     String          @unique
   password  String
-  role      Role     @default(CASHIER)
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  role      Role            @default(CASHIER)
+  movements StockMovement[]
+  createdAt DateTime        @default(now()) @map("created_at")
+  updatedAt DateTime        @updatedAt @map("updated_at")
 
   @@map("users")
 }
@@ -23,6 +24,37 @@ enum Role {
   PHARMACIST
   CASHIER
   INVENTORY_MANAGER
+}
+
+enum MovementType {
+  IN
+  OUT
+  ADJUSTMENT
+}
+
+model Stock {
+  id        String   @id @default(uuid())
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String   @unique @map("product_id")
+  quantity  Int      @default(0)
+  minStock  Int      @default(0) @map("min_stock")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("stock")
+}
+
+model StockMovement {
+  id          String       @id @default(uuid())
+  product     Product      @relation(fields: [productId], references: [id])
+  productId   String       @map("product_id")
+  type        MovementType
+  quantity    Int
+  reason      String?
+  createdBy   User         @relation(fields: [createdById], references: [id])
+  createdById String       @map("created_by_id")
+  createdAt   DateTime     @default(now()) @map("created_at")
+
+  @@map("stock_movements")
 }
 
 model Category {
@@ -36,18 +68,20 @@ model Category {
 }
 
 model Product {
-  id                   String    @id @default(uuid())
+  id                   String          @id @default(uuid())
   name                 String
   description          String?
-  sku                  String    @unique
+  sku                  String          @unique
   barcode              String?
-  price                Decimal   @db.Decimal(10, 2)
-  requiresPrescription Boolean   @default(false) @map("requires_prescription")
-  active               Boolean   @default(true)
-  category             Category  @relation(fields: [categoryId], references: [id])
-  categoryId           String    @map("category_id")
-  createdAt            DateTime  @default(now()) @map("created_at")
-  updatedAt            DateTime  @updatedAt @map("updated_at")
+  price                Decimal         @db.Decimal(10, 2)
+  requiresPrescription Boolean         @default(false) @map("requires_prescription")
+  active               Boolean         @default(true)
+  category             Category        @relation(fields: [categoryId], references: [id])
+  categoryId           String          @map("category_id")
+  stock                Stock?
+  movements            StockMovement[]
+  createdAt            DateTime        @default(now()) @map("created_at")
+  updatedAt            DateTime        @updatedAt @map("updated_at")
 
   @@map("products")
 }

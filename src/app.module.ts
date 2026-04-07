@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { CategoriesModule } from './categories/categories.module';
 import { HealthModule } from './health/health.module';
 import { InventoryModule } from './inventory/inventory.module';
+import { SalesModule } from './sales/sales.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { ProductsModule } from './products/products.module';
 import { RedisModule } from './redis/redis.module';
@@ -20,6 +21,7 @@ import { RedisModule } from './redis/redis.module';
     CategoriesModule,
     ProductsModule,
     InventoryModule,
+    SalesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -13,6 +13,7 @@ model User {
   password  String
   role      Role            @default(CASHIER)
   movements StockMovement[]
+  sales     Sale[]
   createdAt DateTime        @default(now()) @map("created_at")
   updatedAt DateTime        @updatedAt @map("updated_at")
 
@@ -80,8 +81,62 @@ model Product {
   categoryId           String          @map("category_id")
   stock                Stock?
   movements            StockMovement[]
+  saleLines            SaleLine[]
   createdAt            DateTime        @default(now()) @map("created_at")
   updatedAt            DateTime        @updatedAt @map("updated_at")
 
   @@map("products")
+}
+
+enum DocumentType {
+  RUT
+  PASSPORT
+}
+
+enum SaleStatus {
+  COMPLETED
+  CANCELLED
+}
+
+model Customer {
+  id             String       @id @default(uuid())
+  documentType   DocumentType @map("document_type")
+  documentNumber String       @map("document_number")
+  name           String
+  email          String?
+  sales          Sale[]
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+
+  @@unique([documentType, documentNumber])
+  @@map("customers")
+}
+
+model Sale {
+  id              String     @id @default(uuid())
+  customer        Customer   @relation(fields: [customerId], references: [id])
+  customerId      String     @map("customer_id")
+  cashier         User       @relation(fields: [cashierId], references: [id])
+  cashierId       String     @map("cashier_id")
+  status          SaleStatus @default(COMPLETED)
+  prescriptionRef String?    @map("prescription_ref")
+  totalAmount     Decimal    @db.Decimal(10, 2) @map("total_amount")
+  lines           SaleLine[]
+  createdAt       DateTime   @default(now()) @map("created_at")
+  updatedAt       DateTime   @updatedAt @map("updated_at")
+
+  @@map("sales")
+}
+
+model SaleLine {
+  id        String  @id @default(uuid())
+  sale      Sale    @relation(fields: [saleId], references: [id])
+  saleId    String  @map("sale_id")
+  product   Product @relation(fields: [productId], references: [id])
+  productId String  @map("product_id")
+  quantity  Int
+  unitPrice Decimal @db.Decimal(10, 2) @map("unit_price")
+  subtotal  Decimal @db.Decimal(10, 2)
+
+  @@map("sale_lines")
 }

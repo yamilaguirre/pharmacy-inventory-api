@@ -1,6 +1,7 @@
 import { Type } from 'class-transformer';
 import {
   IsBoolean,
+  IsDateString,
   IsDecimal,
   IsOptional,
   IsString,
@@ -32,6 +33,10 @@ export class CreateProductDto {
   @IsOptional()
   @IsBoolean()
   requiresPrescription?: boolean;
+
+  @IsOptional()
+  @IsDateString()
+  expiresAt?: string;
 
   @IsUUID()
   categoryId: string;

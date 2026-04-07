@@ -1,6 +1,7 @@
 import { Type } from 'class-transformer';
 import {
   IsBoolean,
+  IsDateString,
   IsDecimal,
   IsOptional,
   IsString,
@@ -43,4 +44,8 @@ export class UpdateProductDto {
   @IsOptional()
   @IsBoolean()
   active?: boolean;
+
+  @IsOptional()
+  @IsDateString()
+  expiresAt?: string;
 }

@@ -25,6 +25,7 @@ export class ProductsService {
         barcode: dto.barcode,
         price: dto.price,
         requiresPrescription: dto.requiresPrescription ?? false,
+        expiresAt: dto.expiresAt ? new Date(dto.expiresAt) : undefined,
         categoryId: dto.categoryId,
       },
       include: { category: true },
